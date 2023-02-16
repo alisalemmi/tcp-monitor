@@ -1,0 +1,7 @@
+kubernetes/
+
+.git
+.env
+
+README.md
+LICENSE
