@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: tcp-monitor-daemon
+  labels:
+    monitor: tcp
+
+spec:
+  selector:
+    matchLabels:
+      monitor: tcp
+
+  template:
+    metadata:
+      name: tcp-monitor-daemon
+      labels:
+        monitor: tcp
+
+    spec:
+      containers:
+        - name: tcp-monitor
+          image: alisalemmi/tcp-monitor:latest
+
+          volumeMounts:
+            - name: proc-net
+              mountPath: /host/net
+
+      volumes:
+        - name: proc-net
+          hostPath:
+            path: /proc/net
+
+      hostNetwork: true
