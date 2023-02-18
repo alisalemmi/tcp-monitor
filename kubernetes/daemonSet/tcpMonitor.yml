@@ -15,6 +15,9 @@ spec:
       name: tcp-monitor-daemon
       labels:
         monitor: tcp
+      annotations:
+        prometheus.io/job: tcp-monitor
+        prometheus.io/path: /metrics
 
     spec:
       tolerations:
@@ -29,6 +32,12 @@ spec:
       containers:
         - name: tcp-monitor
           image: alisalemmi/tcp-monitor:latest
+
+          ports:
+            - name: prom-metrics
+              protocol: TCP
+              containerPort: 3000
+              hostPort: 3000
 
           volumeMounts:
             - name: proc-net
