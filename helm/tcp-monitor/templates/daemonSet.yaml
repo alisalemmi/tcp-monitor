@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: tcp-monitor-daemon
+  labels:
+    monitor: tcp
+
+spec:
+  selector:
+    matchLabels:
+      monitor: tcp
+
+  template:
+    metadata:
+      name: tcp-monitor-daemon
+      labels:
+        monitor: tcp
+      annotations:
+        prometheus.io/job: tcp-monitor
+        prometheus.io/path: /metrics
+
+    spec:
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+
+        - key: node-role.kubernetes.io/master
+          operator: Exists
+          effect: NoSchedule
+
+      containers:
+        - name: tcp-monitor
+          image: alisalemmi/tcp-monitor:latest
+
+          env:
+            - name: PORT
+              value: {{ .Values.port | quote }}
+            - name: SNMP_PATH
+              value: {{ .Values.snmp_path }}
+
+          ports:
+            - name: prom-metrics
+              protocol: TCP
+              containerPort: {{ .Values.port }}
+              hostPort: {{ .Values.port }}
+
+          volumeMounts:
+            - name: proc-net
+              mountPath: {{ dir .Values.snmp_path }}
+
+      volumes:
+        - name: proc-net
+          hostPath:
+            path: /proc/net
+
+      hostNetwork: true

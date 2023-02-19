@@ -1,0 +1,6 @@
+apiVersion: v2
+name: tcp-monitor
+description: extract tcp retransmission metrics from all node in k8s cluster
+type: application
+version: 0.0.1
+appVersion: 0.0.1
